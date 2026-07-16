@@ -1,0 +1,60 @@
+send_alarm_keystrokes:
+  description: Sends keystrokes to the virtual keypad of an alarm control panel.
+  fields:
+    entity_id:
+      description: Name(s) of the entities to send keystrokes to.
+      example: "alarm_control_panel.partition_1"
+    keystrokes:
+      description: String of keystrokes.
+      example: "*101#"
+
+register_keypad:
+  description: >-
+    Declare a Control4 keypad and its buttons so Home Assistant creates the
+    matching LED switch and button event entities. Called by the companion
+    Ctrlable Control4 keypad driver.
+  fields:
+    keypad_id:
+      description: Stable id of the keypad (Control4 device id).
+      example: "1234"
+    keypad_name:
+      description: Friendly name of the keypad.
+      example: "Kitchen Keypad"
+    buttons:
+      description: List of buttons, each with a number and optional name.
+      example: '[{"number": 1, "name": "Lights"}, {"number": 2, "name": "Scene"}]'
+
+keypad_event:
+  description: >-
+    Report a Control4 keypad button action. Fires a
+    ctrlable_control4_keypad_event bus event and triggers the button's event
+    entity. Called by the companion keypad driver.
+  fields:
+    keypad_id:
+      description: Stable id of the keypad.
+      example: "1234"
+    button:
+      description: Button number.
+      example: 1
+    button_name:
+      description: Optional button name.
+      example: "Lights"
+    action:
+      description: One of press, release, hold, hold_release, double_tap.
+      example: "press"
+
+set_button_led:
+  description: Set a Control4 keypad button LED on or off, optionally with a colour.
+  fields:
+    keypad_id:
+      description: Stable id of the keypad.
+      example: "1234"
+    button:
+      description: Button number.
+      example: 1
+    state:
+      description: true to turn the LED on, false to turn it off.
+      example: true
+    rgb_color:
+      description: Optional [r, g, b] colour (0-255) for multi-colour button LEDs.
+      example: "[255, 0, 0]"

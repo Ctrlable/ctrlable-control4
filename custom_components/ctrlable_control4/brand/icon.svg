@@ -1,0 +1,37 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#20303f"/>
+      <stop offset="1" stop-color="#0e1620"/>
+    </linearGradient>
+    <linearGradient id="kp" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#33475b"/>
+      <stop offset="1" stop-color="#26374a"/>
+    </linearGradient>
+    <radialGradient id="ledGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#39e0c4"/>
+      <stop offset="0.55" stop-color="#22c3a6"/>
+      <stop offset="1" stop-color="#22c3a6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- App tile -->
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Keypad body -->
+  <rect x="176" y="96" width="160" height="320" rx="28" fill="url(#kp)"
+        stroke="#4a627b" stroke-width="3"/>
+
+  <!-- Button 1 (active, glowing LED) -->
+  <circle cx="256" cy="176" r="58" fill="url(#ledGlow)"/>
+  <rect x="204" y="146" width="104" height="60" rx="16" fill="#2c3f52"/>
+  <circle cx="288" cy="176" r="9" fill="#4defd4"/>
+
+  <!-- Button 2 -->
+  <rect x="204" y="226" width="104" height="60" rx="16" fill="#2c3f52"/>
+  <circle cx="288" cy="256" r="9" fill="#3a5064"/>
+
+  <!-- Button 3 -->
+  <rect x="204" y="306" width="104" height="60" rx="16" fill="#2c3f52"/>
+  <circle cx="288" cy="336" r="9" fill="#3a5064"/>
+</svg>

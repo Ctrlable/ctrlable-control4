@@ -1,0 +1,48 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Device is already configured"
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "invalid_auth": "Invalid authentication",
+      "unknown": "Unexpected error",
+      "invalid_license": "License key is missing or invalid. Get a valid key from portal.ctrlable.com."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "host": "IP Address",
+          "password": "Password",
+          "username": "Username",
+          "license_key": "Ctrlable Control4 license key"
+        },
+        "description": "Please enter your Control4 account details and the IP address of your local controller."
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Seconds between updates (media player only)",
+          "alarm_home_mode": "Alarm arm home mode name",
+          "alarm_away_mode": "Alarm arm away mode name",
+          "alarm_night_mode": "Alarm arm night mode name",
+          "alarm_custom_bypass_mode": "Alarm arm custom bypass mode name",
+          "alarm_vacation_mode": "Alarm arm vacation mode name",
+          "import_all": "Import every Control4 device (uncheck to choose specific devices)",
+          "domain_filter": "Device types to show in the picker"
+        },
+        "title": "Ctrlable Control4 options"
+      },
+      "select_devices": {
+        "title": "Select devices to import",
+        "description": "Search and tick the Control4 devices to import as Home Assistant entities ({count} shown). Only ticked devices are imported.",
+        "data": {
+          "selected_items": "Devices to import"
+        }
+      }
+    }
+  }
+}

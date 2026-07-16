@@ -1,0 +1,27 @@
+{
+  "domain": "ctrlable_control4",
+  "name": "Ctrlable Control4",
+  "codeowners": [
+    "@ctrlable"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "http",
+    "websocket_api"
+  ],
+  "documentation": "https://github.com/Ctrlable/ctrlable-control4",
+  "integration_type": "hub",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/Ctrlable/ctrlable-control4/issues",
+  "requirements": [
+    "xmltodict",
+    "python-socketio-v4",
+    "websocket-client"
+  ],
+  "ssdp": [
+    {
+      "st": "c4:director"
+    }
+  ],
+  "version": "0.1.0"
+}
