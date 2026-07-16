@@ -1,0 +1,25 @@
+Ctrlable Control4
+Copyright 2026 Ctrlable / RONLUNA LLC
+
+This product includes software developed as derivative works of the following
+Apache License 2.0 projects:
+
+  - hass-control4  (Home Assistant Control4 integration)
+      Copyright the hass-control4 contributors.
+      https://github.com/lawtancool/hass-control4
+  - pyControl4     (Python Control4 Director client)
+      Copyright the pyControl4 contributors.
+      https://github.com/lawtancool/pyControl4
+
+Modifications by Ctrlable / RONLUNA LLC include, without limitation:
+  - Rebranding to the Ctrlable Control4 integration (domain "ctrlable_control4").
+  - Vendoring the pyControl4 client into the component as an internal package.
+  - Addition of a portal-issued license gate (RS256 JWT verification, revocation).
+  - Addition of selective device import (per-device opt-in with a domain filter
+    and searchable picker) across all Control4 domains.
+  - Addition of Control4 keypad support (button events + LED control) paired with
+    the companion Ctrlable Control4 keypad DriverWorks driver.
+
+The Apache License 2.0 text is provided in the LICENSE file. This NOTICE file is
+retained and distributed with the software as required by section 4(d) of that
+license.

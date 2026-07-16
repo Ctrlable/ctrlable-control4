@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.so
+*.egg-info/
+build/
+dist/
+wheelhouse/
+tools/gate_build/src/
+.DS_Store
+node_modules/
