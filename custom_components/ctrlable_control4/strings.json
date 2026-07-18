@@ -48,7 +48,7 @@
       },
       "select_devices": {
         "title": "Select devices to import",
-        "description": "Search and tick the Control4 devices to import as Home Assistant entities ({count} shown). Only ticked devices are imported.",
+        "description": "Devices of the chosen types are pre-selected ({count} shown) — untick any you don't want, or search to add/remove specific ones. Only ticked devices are imported; the rest are removed from Home Assistant.",
         "data": {
           "selected_items": "Devices to import"
         }
