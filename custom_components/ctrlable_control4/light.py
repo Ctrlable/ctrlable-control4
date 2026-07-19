@@ -25,29 +25,36 @@ CONTROL4_BRIGHTNESS_SCALE=1,100
 CONTROL4_COLOR_MODE_CCT=1
 CONTROL4_COLOR_MODE_XY=0
 async def async_setup_entry(hass,entry,async_add_entities):
-	F=async_add_entities;E='id';C=hass;B=entry;G=C.data[DOMAIN][B.entry_id];H=await get_items_of_category(C,B,CONTROL4_CATEGORY);I=[]
+	G=async_add_entities;F='id';C=hass;B=entry;E=C.data[DOMAIN][B.entry_id];H=await get_items_of_category(C,B,CONTROL4_CATEGORY);I=[]
 	for A in H:
 		try:
-			if A['type']==CONTROL4_ENTITY_TYPE and A[E]and A['proxy']!='fan':
-				P=str(A[_E]);J=A[E];Q=A['roomName'];K=A['parentId'];L=_A;M=_A;N=_A
+			if A['type']==CONTROL4_ENTITY_TYPE and A[F]and A['proxy']!='fan':
+				P=str(A[_E]);J=A[F];Q=A['roomName'];K=A['parentId'];L=_A;M=_A;N=_A
 				for D in H:
-					if D[E]==K:L=D['manufacturer'];M=D[_E];N=D['model']
+					if D[F]==K:L=D['manufacturer'];M=D[_E];N=D['model']
 			else:continue
 		except KeyError:_LOGGER.exception('Unknown device properties received from Control4: %s',A);continue
-		R=await director_get_entry_variables(C,B,J);I.append(Control4Light(G,B,P,J,M,L,N,K,Q,R))
-	F(filter_selected(B,I),True);S=G[CONF_CONTROLLER_UNIQUE_ID]
+		R=await director_get_entry_variables(C,B,J);I.append(Control4Light(E,B,P,J,M,L,N,K,Q,R))
+	G(filter_selected(B,I),True);S=E[CONF_CONTROLLER_UNIQUE_ID]
 	@callback
-	def O(keypad):A=keypad;F(C4KeypadLed(S,A,B)for B in A['buttons'])
+	def O(keypad):A=keypad;G(C4KeypadLed(E,S,A,B)for B in A['buttons'])
 	for T in known_keypads(C):O(T)
 	B.async_on_unload(async_dispatcher_connect(C,SIGNAL_ADD_KEYPAD_LED,O))
 class C4KeypadLed(LightEntity):
 	_attr_should_poll=_B;_attr_color_mode=ColorMode.RGB;_attr_supported_color_modes={ColorMode.RGB}
-	def __init__(A,controller_unique_id,keypad,button):E=button;D=keypad;B=D['keypad_id'];C=int(E['number']);A._attr_is_on=_B;A._attr_brightness=255;A._attr_rgb_color=255,255,255;A._attr_name=f"{E.get(_E)or f"Button {C}"} LED";A._attr_unique_id=f"c4kp_{B}_led_{C}";A.entity_id=f"light.ctrlable_c4_kp_{B}_led_{C}";A._attr_device_info=DeviceInfo(identifiers={(DOMAIN,f"keypad_{B}")},manufacturer='Control4',name=D.get('keypad_name')or B,via_device=(DOMAIN,controller_unique_id))
+	def __init__(A,entry_data,controller_unique_id,keypad,button):E=button;D=keypad;A._entry_data=entry_data;B=D['keypad_id'];C=int(E['number']);A._keypad_id=B;A._button=C;A._attr_is_on=_B;A._attr_brightness=255;A._attr_rgb_color=255,255,255;A._attr_name=f"{E.get(_E)or f"Button {C}"} LED";A._attr_unique_id=f"c4kp_{B}_led_{C}";A.entity_id=f"light.ctrlable_c4_kp_{B}_led_{C}";A._attr_device_info=DeviceInfo(identifiers={(DOMAIN,f"keypad_{B}")},manufacturer='Control4',name=D.get('keypad_name')or B,via_device=(DOMAIN,controller_unique_id))
+	async def _push_color(A,rgb):
+		if not str(A._keypad_id).isdigit():return
+		B=A._entry_data.get(CONF_DIRECTOR)
+		if B is _A:return
+		C,D,E=rgb or(0,0,0);F='0x%02X%02X%02X'%(C,D,E)
+		try:await B.send_post_request(f"/api/v1/items/{A._keypad_id}/commands",'KEYPAD_BUTTON_COLOR',{'BUTTON_ID':A._button,'CURRENT_COLOR':F})
+		except Exception as G:_LOGGER.debug('Keypad %s LED %s set failed: %s',A._keypad_id,A._button,G)
 	async def async_turn_on(A,**B):
 		if ATTR_RGB_COLOR in B:A._attr_rgb_color=B[ATTR_RGB_COLOR]
 		if ATTR_BRIGHTNESS in B:A._attr_brightness=B[ATTR_BRIGHTNESS]
-		A._attr_is_on=True;A.async_write_ha_state()
-	async def async_turn_off(A,**B):A._attr_is_on=_B;A.async_write_ha_state()
+		A._attr_is_on=True;A.async_write_ha_state();await A._push_color(A._attr_rgb_color)
+	async def async_turn_off(A,**B):A._attr_is_on=_B;A.async_write_ha_state();await A._push_color(_A)
 class Control4Light(Control4Entity,LightEntity):
 	def __init__(A,entry_data,entry,name,idx,device_name,device_manufacturer,device_model,device_parent_id,device_area,device_attributes):super().__init__(entry_data,entry,name,idx,device_name,device_manufacturer,device_model,device_parent_id,device_area,device_attributes);A._supports_color=_B;A._supports_ct=_B;A._ct_min=_A;A._ct_max=_A;A._rate_min=_A;A._rate_max=_A;A._effects_by_name={};A._current_effect=_A;A._attr_supported_color_modes={ColorMode.BRIGHTNESS}if A._is_dimmer else{ColorMode.ONOFF};A._attr_color_mode=ColorMode.BRIGHTNESS if A._is_dimmer else ColorMode.ONOFF;A._attr_min_color_temp_kelvin=_A;A._attr_max_color_temp_kelvin=_A
 	def create_api_object(A):return C4Light(A.entry_data[CONF_DIRECTOR],A._idx)
