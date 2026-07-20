@@ -1,5 +1,7 @@
 from __future__ import annotations
-_F='light_color_current_color_mode'
+_H='light_color_current_color_mode'
+_G='number'
+_F='keypad_id'
 _E='name'
 _D='Brightness Percent'
 _C='LIGHT_LEVEL'
@@ -29,27 +31,35 @@ async def async_setup_entry(hass,entry,async_add_entities):
 	for A in H:
 		try:
 			if A['type']==CONTROL4_ENTITY_TYPE and A[F]and A['proxy']!='fan':
-				P=str(A[_E]);J=A[F];Q=A['roomName'];K=A['parentId'];L=_A;M=_A;N=_A
+				Q=str(A[_E]);J=A[F];R=A['roomName'];K=A['parentId'];L=_A;M=_A;N=_A
 				for D in H:
 					if D[F]==K:L=D['manufacturer'];M=D[_E];N=D['model']
 			else:continue
 		except KeyError:_LOGGER.exception('Unknown device properties received from Control4: %s',A);continue
-		R=await director_get_entry_variables(C,B,J);I.append(Control4Light(E,B,P,J,M,L,N,K,Q,R))
-	G(filter_selected(B,I),True);S=E[CONF_CONTROLLER_UNIQUE_ID]
+		S=await director_get_entry_variables(C,B,J);I.append(Control4Light(E,B,Q,J,M,L,N,K,R,S))
+	G(filter_selected(B,I),True);T=E[CONF_CONTROLLER_UNIQUE_ID];O=E.setdefault('_keypad_led_uids',set())
 	@callback
-	def O(keypad):A=keypad;G(C4KeypadLed(E,S,A,B)for B in A['buttons'])
-	for T in known_keypads(C):O(T)
-	B.async_on_unload(async_dispatcher_connect(C,SIGNAL_ADD_KEYPAD_LED,O))
+	def P(keypad):
+		A=keypad;D=[]
+		for E in A['buttons']:
+			F=f"c4kp_{A[_F]}_led_{int(E[_G])}"
+			if F in O:continue
+			O.add(F);D.append(C4KeypadLed(C,B.entry_id,T,A,E))
+		if D:G(D)
+	for U in known_keypads(C):P(U)
+	B.async_on_unload(async_dispatcher_connect(C,SIGNAL_ADD_KEYPAD_LED,P))
 class C4KeypadLed(LightEntity):
 	_attr_should_poll=_B;_attr_color_mode=ColorMode.RGB;_attr_supported_color_modes={ColorMode.RGB}
-	def __init__(A,entry_data,controller_unique_id,keypad,button):E=button;D=keypad;A._entry_data=entry_data;B=D['keypad_id'];C=int(E['number']);A._keypad_id=B;A._button=C;A._attr_is_on=_B;A._attr_brightness=255;A._attr_rgb_color=255,255,255;A._attr_name=f"{E.get(_E)or f"Button {C}"} LED";A._attr_unique_id=f"c4kp_{B}_led_{C}";A.entity_id=f"light.ctrlable_c4_kp_{B}_led_{C}";A._attr_device_info=DeviceInfo(identifiers={(DOMAIN,f"keypad_{B}")},manufacturer='Control4',name=D.get('keypad_name')or B,via_device=(DOMAIN,controller_unique_id))
+	def __init__(A,hass,entry_id,controller_unique_id,keypad,button):E=button;D=keypad;A.hass=hass;A._entry_id=entry_id;B=D[_F];C=int(E[_G]);A._keypad_id=B;A._button=C;A._attr_is_on=_B;A._attr_brightness=255;A._attr_rgb_color=255,255,255;A._attr_name=f"{E.get(_E)or f"Button {C}"} LED";A._attr_unique_id=f"c4kp_{B}_led_{C}";A.entity_id=f"light.ctrlable_c4_kp_{B}_led_{C}";A._attr_device_info=DeviceInfo(identifiers={(DOMAIN,f"keypad_{B}")},manufacturer='Control4',name=D.get('keypad_name')or B,via_device=(DOMAIN,controller_unique_id))
 	async def _push_color(A,rgb):
 		if not str(A._keypad_id).isdigit():return
-		B=A._entry_data.get(CONF_DIRECTOR)
-		if B is _A:return
-		C,D,E=rgb or(0,0,0);F='0x%02X%02X%02X'%(C,D,E)
-		try:await B.send_post_request(f"/api/v1/items/{A._keypad_id}/commands",'KEYPAD_BUTTON_COLOR',{'BUTTON_ID':A._button,'CURRENT_COLOR':F})
-		except Exception as G:_LOGGER.debug('Keypad %s LED %s set failed: %s',A._keypad_id,A._button,G)
+		F=A.hass.data.get(DOMAIN,{}).get(A._entry_id,{}).get(CONF_DIRECTOR)
+		if F is _A:_LOGGER.debug('Keypad %s LED %s: no live director; skipping',A._keypad_id,A._button);return
+		B,C,D=rgb or(0,0,0)
+		if rgb is not _A and A._attr_brightness is not _A:E=A._attr_brightness/255;B,C,D=round(B*E),round(C*E),round(D*E)
+		G='%02X%02X%02X'%(B,C,D)
+		try:await F.send_post_request(f"/api/v1/items/{A._keypad_id}/commands",'KEYPAD_BUTTON_COLOR',{'BUTTON_ID':A._button,'CURRENT_COLOR':G})
+		except Exception as H:_LOGGER.warning('Keypad %s LED %s set failed: %s',A._keypad_id,A._button,H)
 	async def async_turn_on(A,**B):
 		if ATTR_RGB_COLOR in B:A._attr_rgb_color=B[ATTR_RGB_COLOR]
 		if ATTR_BRIGHTNESS in B:A._attr_brightness=B[ATTR_BRIGHTNESS]
@@ -101,7 +111,7 @@ class Control4Light(Control4Entity,LightEntity):
 		if _D in A.extra_state_attributes:return value_to_brightness(CONTROL4_BRIGHTNESS_SCALE,A.extra_state_attributes[_D])
 	@property
 	def color_temp_kelvin(self):
-		A=self.extra_state_attributes;B=A.get(_F);C=A.get('light_color_current_color_correlated_temperature')
+		A=self.extra_state_attributes;B=A.get(_H);C=A.get('light_color_current_color_correlated_temperature')
 		if B is not _A and int(B)==CONTROL4_COLOR_MODE_CCT and C is not _A:D=int(C);return D
 	@property
 	def min_color_temp_kelvin(self):
@@ -127,7 +137,7 @@ class Control4Light(Control4Entity,LightEntity):
 	def _is_dimmer(self):return bool(_C in self.extra_state_attributes)or bool(_D in self.extra_state_attributes)
 	@property
 	def color_mode(self):
-		A=self;C=A.extra_state_attributes;D=C.get(_F)
+		A=self;C=A.extra_state_attributes;D=C.get(_H)
 		try:
 			B=int(D)
 			if B==CONTROL4_COLOR_MODE_CCT:return ColorMode.COLOR_TEMP
